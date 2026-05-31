@@ -80,9 +80,9 @@ library/竖屏/
 **7天免费试用** — 安装后自动开始。试用期内 M1-M5 全部功能开放。
 
 过期后需购买 License Key 解锁：
-1. 访问购买页面（即将上线）
-2. 每月 $15/月，自动续费
-3. 将收到的 Key 填入 `config.yaml` → `license.key` 即可
+1. [购买 License](https://zplaze.gumroad.com/l/uunfl)（$15/月）
+2. 付款后自动收到 Key 邮件
+3. 将 Key 填入 `config.yaml` → `license.key`
 
 ## 更多
 

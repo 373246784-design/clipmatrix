@@ -617,6 +617,11 @@ def run_pipeline(account_id: str, direction: str = None,
     返回: {"success": bool, "video_path": str, "errors": [str], ...}
     """
     ensure_dirs()
+
+    # 🔒 License 检查
+    from license import require_license
+    require_license(_CFG)
+
     accounts = load_accounts()
     account_key = account_id if account_id in accounts else None
     if not account_key:

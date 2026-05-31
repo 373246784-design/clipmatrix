@@ -50,3 +50,10 @@ directions:
   - 成都
   - 重庆
   - 川西
+
+# License（可选，留空=7天免费试用）
+license:
+  key: ""
+  enable_trial: true
+  trial_days: 7
+  store_url: "https://your-store.lemonsqueezy.com"

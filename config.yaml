@@ -65,6 +65,13 @@ directions:
   - 北川
   - 川南
 
+# --- License ---
+license:
+  key: ""                    # LemonSqueezy License Key（留空 = 7天试用）
+  enable_trial: true
+  trial_days: 7
+  store_url: "https://your-store.lemonsqueezy.com"  # 购买页面
+
 # --- M5 质检 ---
 qa:
   checks:

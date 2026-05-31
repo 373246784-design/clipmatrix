@@ -27,6 +27,19 @@
 - 🚀 **一键发布** — Metricool API直推TK+IG，随机偏移防算法识别
 - 📊 **批量生产** — 一条命令跑7天×14条，25个账号同时跑
 
+## M1-M6 各阶段详解
+
+| 阶段 | 做什么 | 输入 → 输出 |
+|------|--------|------------|
+| **M1 策略** | 按方向轮换分配话题，避免相邻视频重复 | 账号配置 → 本轮方向 |
+| **M1.5 文案** | DeepSeek生成40-60词TikTok口播（钩子→内容→CTA） | 方向词 → 英文脚本 + 搜索信息注入 |
+| **TTS** | ChatTTS原生英文配音，自动清洗特殊字符 | 脚本文本 → .wav音频 |
+| **M2 审核** | CTA完整性、句子长度校验、storyboard生成 | 脚本 → 通过/打回 + 分镜表 |
+| **M3 匹配** | 场景名→中文关键词→素材库文件名匹配，7天去重 | 分镜场景 → 匹配到的素材文件列表 |
+| **M4 渲染** | Chrome headless运行HyperFrames HTML模板，GSAP动画合成 | 素材+字幕+音频 → 1080×1920 MP4 |
+| **M5 质检** | 黑帧检测(>1s打回)、音频电平、字幕重叠、场景数量 | 视频 → 通过/不合格原因 |
+| **M6 发布** | Metricool API自动排期，随机偏移±30分钟发布 | 视频+文案 → TK+IG双平台上线 |
+
 ## 实际效果
 
 这套工具正在运营 **21个TikTok/Instagram账号**，日均产出40+条竖屏旅游短视频，累计发布内容覆盖超过14万次播放。
@@ -47,11 +60,21 @@ pip install -r requirements.txt  # TODO
 
 ```bash
 cp config.yaml.example config.yaml
-# 填入:
-#   DeepSeek API Key
-#   Metricool Token + User ID
-#   素材库路径
 ```
+
+编辑 `config.yaml`，填入以下信息：
+
+| 配置项 | 说明 | 在哪获取 |
+|--------|------|---------|
+| `api.deepseek.api_key` | DeepSeek API Key | [platform.deepseek.com](https://platform.deepseek.com) → API Keys |
+| `api.metricool.token` | Metricool Token | Metricool后台 → Settings → API |
+| `api.metricool.user_id` | Metricool用户ID | 同上 |
+| `paths.library_dir` | 素材库存放路径 | 你自己整理的实拍素材目录 |
+| `accounts.id_range` | 账号范围 | 你要跑几个账号就填几个，如 `["00","01","02"]` |
+| `directions` | 内容方向列表 | 你的垂直领域话题，如 `["美食","探店","旅行"]` |
+| `license.key` | 购买后填Order ID | [Gumroad购买页](https://zplaze.gumroad.com/l/uunfl) |
+
+> 💡 也可用环境变量：`export DEEPSEEK_API_KEY=xxx`、`export METRICOOL_TOKEN=xxx`
 
 ## 使用
 

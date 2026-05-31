@@ -11,7 +11,7 @@ except ImportError:
     requests = None
 
 INSTALL_FILE = Path.home() / ".clipmatrix_install"
-GUMROAD_VERIFY = "https://api.gumroad.com/v2/licenses/verify"
+GUMROAD_VERIFY = "https://api.gumroad.com/v2/sales/"
 PRODUCT_PERMALINK = "uunfl"
 
 
@@ -71,36 +71,31 @@ def check_license(config: dict, silent: bool = False) -> dict:
 
 
 def _validate_gumroad(license_key: str, silent: bool = False) -> dict:
+    """验证 Gumroad 订单ID（用户在购买邮件中收到的 Order ID）"""
     if not requests:
-        print("⚠️  pip install requests")
         return {"valid": True, "plan": "pro", "message": "✅ License accepted (offline)"}
 
     try:
-        r = requests.post(GUMROAD_VERIFY, data={
-            "product_permalink": PRODUCT_PERMALINK,
-            "license_key": license_key,
-        }, timeout=10)
+        # 用 Gumroad Sale API 验证订单存在且属于 ClipMatrix
+        r = requests.get(f"{GUMROAD_VERIFY}{license_key}", timeout=10)
 
         if r.status_code == 200:
             data = r.json()
-            if data.get("success"):
-                purchase = data.get("purchase", {})
+            sale = data.get("sale", {})
+            # 验证订单属于本产品
+            if sale.get("product_permalink") == PRODUCT_PERMALINK:
                 return {
                     "valid": True, "plan": "pro",
-                    "message": f"✅ License valid — {purchase.get('email', 'Pro')}"
+                    "message": f"✅ License valid — {sale.get('email', 'Pro')}"
                 }
             else:
                 return {"valid": False, "plan": "invalid",
-                        "message": f"🔒 {data.get('message', 'License invalid or expired')}"}
+                        "message": "🔒 Order ID not found for ClipMatrix"}
 
-        if r.status_code == 404:
-            return {"valid": False, "plan": "invalid", "message": "🔒 License key not found"}
+        return {"valid": False, "plan": "invalid", "message": "🔒 Invalid license key"}
 
-    except requests.RequestException as e:
-        print(f"⚠️  Network: {e}")
-        return {"valid": True, "plan": "pro", "message": "✅ License accepted (cached)"}
-
-    return {"valid": False, "plan": "invalid", "message": "🔒 Validation failed"}
+    except requests.RequestException:
+        return {"valid": True, "plan": "pro", "message": "✅ License accepted (offline)"}
 
 
 def require_license(config: dict):

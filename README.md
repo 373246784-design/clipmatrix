@@ -81,8 +81,8 @@ library/竖屏/
 
 过期后需购买 License Key 解锁：
 1. [购买 License](https://zplaze.gumroad.com/l/uunfl)（$15/月）
-2. 付款后自动收到 Key 邮件
-3. 将 Key 填入 `config.yaml` → `license.key`
+2. 付款后 Gumroad 发邮件，内含 **Order ID**
+3. 把 Order ID 填入 `config.yaml` → `license.key`
 
 ## 更多
 

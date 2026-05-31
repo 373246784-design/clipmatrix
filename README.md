@@ -1,6 +1,6 @@
-# 🦞 Panda Workflow — TikTok/IG 全自动短视频生产线
+# 🦞 ClipMatrix — 真实素材批量混剪+口播+发布矩阵
 
-> **真实素材 + AI文案 + 5种视觉风格 + 自动发布 = 1人运营25个账号矩阵**
+> **用你自己的拍摄素材，AI写口播，自动匹配画面，5种视觉风格，一键发布到TK+IG**
 
 40秒产一条视频，从文案到发布全自动。不是AI生成画面——是用你的真实拍摄素材，AI匹配最合适的片段，HyperFrames引擎渲染，自动发到TikTok和Instagram。
 
@@ -35,11 +35,11 @@
 
 ```bash
 # OpenClaw 用户
-openclaw skills install git:373246784-design/panda-workflow
+openclaw skills install git:373246784-design/clipmatrix
 
 # 直接使用
-git clone https://github.com/373246784-design/panda-workflow.git
-cd panda-workflow
+git clone https://github.com/373246784-design/clipmatrix.git
+cd clipmatrix
 pip install -r requirements.txt  # TODO
 ```
 

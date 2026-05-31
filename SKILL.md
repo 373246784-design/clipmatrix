@@ -1,6 +1,6 @@
 ---
-name: panda-workflow
-description: "Automate TikTok/Instagram short-video production for content matrix operations — AI script generation, real-footage matching, 5 visual styles, batch run up to 25 accounts, auto-publish via Metricool."
+name: clipmatrix
+description: "Real-footage batch video production for TikTok/Instagram content matrix — AI script, 5 visual styles, auto match from your library, batch run 25 accounts, auto-publish."
 metadata:
   openclaw:
     requires:
@@ -42,10 +42,10 @@ metadata:
 
 ```bash
 # 1. 安装
-openclaw skills install git:373246784-design/panda-workflow
+openclaw skills install git:373246784-design/clipmatrix
 
 # 2. 配置
-cd skills/panda-workflow
+cd clipmatrix
 cp config.yaml.example config.yaml
 # 编辑 config.yaml 填入: DeepSeek API Key, Metricool Token, 素材库路径
 

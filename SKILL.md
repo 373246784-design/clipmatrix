@@ -1,6 +1,6 @@
 ---
 name: panda-workflow
-description: "TikTok/IG short-video production pipeline: script→TTS→footage matching→render→QA→auto-publish. Batch-run 25 accounts."
+description: "Automate TikTok/Instagram short-video production for content matrix operations — AI script generation, real-footage matching, 5 visual styles, batch run up to 25 accounts, auto-publish via Metricool."
 metadata:
   openclaw:
     requires:
@@ -8,88 +8,72 @@ metadata:
       env: ["DEEPSEEK_API_KEY"]
 ---
 
-# Panda Workflow — TikTok/IG 短视频自动化生产
+# Panda Workflow — 内容矩阵短视频自动化
 
-一款适合内容矩阵运营的视频自动化工具，特别针对旅游/垂直行业做了深度优化。
-覆盖从文案生成到多平台发布的完整流水线：M1策略→M1.5文案→TTS→M2审核→M3素材匹配→M4渲染→M5质检→M6发布。
+**定位**：一套用真实素材自动剪辑TikTok/IG短视频的生产线，适合做矩阵运营的创作者。不是模板生成——是真的从你的素材库里匹配实拍画面、AI写文案、TTS配音、自动渲染并发布。
 
-## 快速上手
+## 核心能力（6个阶段）
+
+| 阶段 | 做什么 | 怎么做的 |
+|------|--------|---------|
+| **M1 策略** | 自动分配内容方向 | 按方向轮换（成都→重庆→川西→北川→川南），避免相邻视频重复 |
+| **M1.5 文案** | AI生成TikTok口播 | DeepSeek写40-60词英文钩子→正文→CTA，注入真实地点信息（非编造） |
+| **TTS 配音** | 文字转语音 | ChatTTS原生发音，自动清洗特殊字符，支持男女声切换 |
+| **M2 审核** | 文案质量把关 | CTA完整性检查、句子长度校验、storyboard生成 |
+| **M3 素材匹配** | 从素材库自动挑素材 | 场景名→中文关键词→素材文件名匹配，7天去重，短素材自动过滤 |
+| **M4 渲染** | HyperFrames视觉引擎 | **5种视觉风格**可选：|
+| | | ▸ `velvet` — 金色杂志封面风（城市介绍） |
+| | | ▸ `soft_signal` — 暖陶土编辑式双字体（亲子/慢旅行） |
+| | | ▸ `shadow_cut` — 琥珀SVG路线时间轴（路线定制） |
+| | | ▸ `swiss_pulse` — 蓝色动态排版+数字滚动（种草建议） |
+| | | ▸ `comparison` — 酒红VS分屏对比（旅游对比） |
+| **M5 质检** | 自动质量检测 | 黑帧（>1s自动打回）、音频电平、字幕重叠、场景数量 |
+| **M6 发布** | 自动排期发布 | Metricool API → TikTok + Instagram，随机偏移防算法检测 |
+
+## 适用场景
+
+- ✅ 旅游/美食/探店等有**真实素材库**的垂直领域
+- ✅ 运营**多账号矩阵**（最多25个账号同时跑）
+- ✅ 需要**每天稳定产出**竖屏短视频（当前产出量：日均40+条）
+- ✅ 想要**视觉风格差异化**（不同账号不同风格，避免千篇一律）
+- ⚠️ 不适合纯AI生成画面、不适合无素材库的纯文字类视频
+
+## 快速开始
 
 ```bash
-# 1. 配置
-cp config.yaml.example config.yaml
-# 填写: DeepSeek API Key、Metricool Token、素材库路径
+# 1. 安装
+openclaw skills install git:373246784-design/panda-workflow
 
-# 2. 跑一条测试
+# 2. 配置
+cd skills/panda-workflow
+cp config.yaml.example config.yaml
+# 编辑 config.yaml 填入: DeepSeek API Key, Metricool Token, 素材库路径
+
+# 3. 跑一条
 python3 scripts/run_and_notify.py 00 2026-06-01 AM
 
-# 3. 批量生产
+# 4. 批量生产（7天×2条=14条）
 python3 scripts/batch_runner.py 00 2026-06-01 2026-06-07
 ```
 
-## 依赖
+## 配置
 
-```bash
-# Python
-pip install openai pyyaml requests ffmpeg-python
-
-# 系统工具
-brew install ffmpeg cwebp
-# Chrome 浏览器（M4 渲染需要）
-
-# TTS（二选一）
-# ChatTTS（推荐）: pip install ChatTTS
-# edge-tts（备用）: pip install edge-tts
-```
-
-## 配置文件
-
-所有设置集中在 `config.yaml`，零硬编码：
-
-| 配置块 | 内容 |
-|--------|------|
-| `accounts` | 账号范围（00-24） |
-| `api` | DeepSeek / Metricool 的 API Key 和 URL |
-| `feishu` | 飞书通知配置 |
-| `paths` | 素材库、成品、模板的路径 |
-| `workflow` | 重试次数、TTS上限、黑帧阈值 |
-| `video` | 口播词数、编码格式 |
-| `directions` | 内容方向轮换列表 |
-
-## 素材库结构
-
-```
-library/竖屏/   ← M3 匹配这里
-  成都_熊猫基地_白天_旅拍.mp4
-  重庆_洪崖洞_晚上_航拍.mp4
-  ...
-library/横屏/   ← 备选
-sounds/         ← BGM 曲库
-```
-
-素材命名规则：`{方向}_{场景名}_{时间}_{角度}.mp4`
+| 配置项 | 说明 | 必需 |
+|--------|------|:--:|
+| `DEEPSEEK_API_KEY` | DeepSeek API Key（环境变量） | ✅ |
+| `METRICOOL_TOKEN` | Metricool API Token | ✅ |
+| `api.deepseek.model` | 文案模型（默认 deepseek-v4-pro） | - |
+| `paths.library_dir` | 素材库存放路径 | ✅ |
+| `workflow.tta_max_duration_sec` | TTS最长秒数（默认50） | - |
+| `video.min_words/max_words` | 口播词数范围（60-120） | - |
+| `directions` | 内容方向列表 | - |
+| `accounts.id_range` | 账号ID范围 | ✅ |
 
 ## 故障排查
 
-| 症状 | 原因 | 解决 |
-|------|------|------|
-| M4 黑屏 | 素材太短或 storyboard 场景过多 | 降低 `workflow.storyboard_padding` 或换长素材 |
-| TTS 超长 | 口播词数 >120 | `video.max_words` 自动截断，或手动删减 |
-| DeepSeek 超时 | API 不稳定 | 降低 `workflow.max_retries`，或切 `fallback_model` |
-| M3 素材缺口 | `library_dir` 下没有匹配场景 | 补素材，或检查 `directions` 是否和素材文件名一致 |
-| M6 发布失败 | Metricool Token 过期 | 重新获取 Token，检查 `api.metricool` |
+- **M4黑屏** → 素材太短，降 `workflow.storyboard_padding` 或换长素材
+- **DeepSeek超时** → API不稳定，切 `fallback_model: deepseek-v4-flash`
+- **M3素材缺口** → 素材文件名需包含场景中文名，补到 `library_dir/竖屏/`
+- **M6发布失败** → Metricool Token过期，重新获取
 
-## 账号管理
-
-`accounts/` 下每个账号一个 JSON 文件：
-```json
-{
-  "account_id": "00",
-  "name": "China Unbounded",
-  "style": "velvet",
-  "orientation": "vertical",
-  "gender": "female"
-}
-```
-
-支持5种视觉风格：`velvet` / `soft_signal` / `shadow_cut` / `swiss_pulse` / `comparison`
+完整排查见 `references/TROUBLESHOOTING.md`，架构说明见 `references/WORKFLOW.md`。

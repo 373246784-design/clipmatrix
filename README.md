@@ -70,10 +70,11 @@ M6 自动发布      → Metricool API → TikTok + Instagram，随机偏移防�
 
 每套风格独立的字体、色系、动画、字幕特效——不同账号不同风格，刷到同一个人的两个账号也看不出来是同一套工具做的。
 
-| Velvet | Soft Signal | Shadow Cut | Swiss Pulse | Comparison |
-|:--:|:--:|:--:|:--:|:--:|
-| 🏙️ 金色杂志风 | 👨‍👩‍👧 暖陶土编辑风 | 🗺️ 琥珀路线时间轴 | 📋 蓝调动态排版 | ⚖️ 酒红VS分屏 |
-| 城市/奢华 | 亲子/慢旅行 | 线路/攻略 | 种草/建议 | 对比/评测 |
+| Velvet | Soft Signal | Shadow Cut |
+|:--:|:--:|:--:|
+| ![Velvet](demo/velvet.gif) | ![Soft Signal](demo/soft_signal.gif) | ![Shadow Cut](demo/shadow_cut.gif) |
+| 🏙️ 金色杂志风 | 👨‍👩‍👧 暖陶土编辑风 | 🗺️ 琥珀路线时间轴 |
+| 城市/奢华 | 亲子/慢旅行 | 线路/攻略 |
 
 ## 实际跑分
 

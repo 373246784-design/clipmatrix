@@ -80,6 +80,10 @@ M6 自动发布      → Metricool API → TikTok + Instagram，随机偏移防�
 
 已经在跑 **21个TikTok+Instagram账号**，日均产出40+条视频，累计14万+播放。
 
+| Metricool 批量排期 | 多账号发布队列 |
+|:--:|:--:|
+| ![排期](demo/schedule1.jpg) | ![发布](demo/schedule2.jpg) |
+
 ## 安装
 
 ```bash

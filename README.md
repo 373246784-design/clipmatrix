@@ -78,7 +78,7 @@ M6 自动发布      → 按需选择发布平台API → 自动推送到你的�
 
 ## 实际跑分
 
-已经在跑 **21个TikTok+Instagram账号**，日均产出40+条视频，累计14万+播放。
+已经在跑 **25个TikTok+Instagram账号**，日均产出40+条视频。
 
 | Metricool 批量排期 | 多账号发布队列 |
 |:--:|:--:|
@@ -129,7 +129,7 @@ python3 scripts/batch_runner.py 00 2026-06-01 2026-06-07
 | 🎉 免费试用 | $0 · 7天 | M1-M5全功能 |
 | 💎 Pro 订阅 | **$15/月** | 无限制使用 + 批量生产 + 自动更新 |
 
-[👉 开始订阅](https://zplaze.gumroad.com/l/uunfl)
+[👉 Get Pro · $15/月](https://zplaze.gumroad.com/l/uunfl)
 
 ## 更多
 

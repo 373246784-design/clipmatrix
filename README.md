@@ -5,6 +5,10 @@
   <b>100条视频成本不到10块钱。真正的一人矩阵工厂。</b>
 </p>
 
+<p align="center">
+  <img src="demo/before_after.gif" width="480" alt="Before/After — raw footage vs ClipMatrix output">
+</p>
+
 ---
 
 ## 这玩意儿能干嘛

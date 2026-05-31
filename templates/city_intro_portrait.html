@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=1080,height=1920"/>
+  <script>{{GSAP_INLINE}}</script>
+  <style>{{CSS_INLINE}}</style>
+</head>
+<body>
+<div id="main" data-composition-id="main" data-start="0" data-duration="{{TOTAL_DUR}}" data-width="1080" data-height="1920">
+  {{VIDEO_TRACKS}}
+  {{SCENES_HTML}}
+</div>
+
+<div class="progress-bar" id="prog-bar">
+  <div class="progress-fill" id="prog-fill"></div>
+</div>
+
+<audio id="tts" src="{{TTS_SRC}}" data-start="0" data-duration="{{TTS_DUR}}" data-volume="1.0" data-track-index="60"></audio>
+<audio id="bgm" src="{{BGM_SRC}}" data-start="0" data-duration="{{TOTAL_DUR}}" data-volume="0.12" data-track-index="61"></audio>
+
+<script>
+window.__timelines = window.__timelines || {};
+var tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+
+{{SCENES_ANIMS}}
+
+tl.fromTo("#prog-fill",{scaleX:0},{scaleX:1,duration:{{TOTAL_DUR}},ease:"none"},0.2);
+tl.set({},{},{{TOTAL_DUR}});
+window.__timelines["main"] = tl;
+window.__hf = { duration: {{TOTAL_DUR}}, seek: function(t) {
+  var tll = window.__timelines && window.__timelines["main"];
+  if (tll) tll.seek(t);
+}};
+</script>
+</body>
+</html>

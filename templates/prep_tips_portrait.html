@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=1080,height=1920"/>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{margin:0;width:1080px;height:1920px;overflow:hidden;background:#0a0a0a}
+    body{font-family:'DM Sans',sans-serif;color:#fff}
+    video{display:block;object-fit:cover;width:100%;height:100%}
+
+    .bd{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,0.35) 0%,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.08) 60%,rgba(0,0,0,0.25) 100%)}
+    .ol{position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:50px 60px 50px 60px;pointer-events:none}
+    .ol *{text-shadow:3px 3px 0 rgba(0,0,0,0.9),-3px -3px 0 rgba(0,0,0,0.9),3px -3px 0 rgba(0,0,0,0.9),-3px 3px 0 rgba(0,0,0,0.9),0 3px 0 rgba(0,0,0,0.9),3px 0 0 rgba(0,0,0,0.9),0 -3px 0 rgba(0,0,0,0.9),-3px 0 0 rgba(0,0,0,0.9),0 0 16px rgba(0,0,0,0.7)!important;font-weight:900!important}
+
+    /* ── Hook区（实用/专业感） ── */
+    .hook-tag{font-size:20px;font-weight:700;color:#22D3EE;letter-spacing:5px;text-transform:uppercase;margin-bottom:14px}
+    .hook-line{font-size:58px;font-weight:900;line-height:1.15}
+    .hook-sub{font-size:24px;font-weight:400;color:rgba(255,255,255,0.5);margin-top:14px;max-width:900px}
+
+    /* ── 实用tips卡片（青蓝色调，清单感） ── */
+    .prep-card{background:rgba(0,0,0,0.4);border:1px solid rgba(34,211,238,0.06);border-radius:20px;padding:22px 28px;max-width:920px}
+    .prep-label{font-size:13px;font-weight:700;color:#22D3EE;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
+    .prep-title{font-size:34px;font-weight:900;line-height:1.2}
+    .prep-desc{font-size:22px;font-weight:400;color:rgba(255,255,255,0.55);margin-top:6px;line-height:1.5;max-width:850px}
+    .prep-tag{display:inline-block;padding:3px 10px;border:1px solid rgba(34,211,238,0.1);border-radius:12px;font-size:12px;color:#22D3EE;margin-top:8px;margin-right:4px}
+    .prep-emoji{font-size:40px;margin-bottom:4px;text-shadow:none!important}
+
+    /* ── 进度指示条（清单完成感） ── */
+    .list-prog-row{display:flex;align-items:center;gap:12px;margin-top:12px;width:100%;max-width:850px}
+    .list-track{flex:1;height:4px;background:rgba(255,255,255,0.04);border-radius:4px;overflow:hidden}
+    .list-fill{height:100%;width:0%;background:#22D3EE;border-radius:4px}
+    .list-num{font-size:14px;font-weight:700;color:#22D3EE;text-shadow:none!important;min-width:60px;text-align:right}
+
+    /* ── CTA ── */
+    .cta-group{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:20px;pointer-events:none}
+    .cta-btn{display:inline-block;padding:22px 64px;background:#25D366;border-radius:50px;font-size:32px;font-weight:700;color:#fff;box-shadow:0 0 50px rgba(37,211,102,0.1);text-shadow:none!important}
+    .brand-bar{display:flex;align-items:center;gap:10px;padding:10px 24px;background:rgba(0,0,0,0.35);border-radius:30px;border:1px solid rgba(255,255,255,0.05)}
+    .brand-dot{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#f7971e,#ffd200)}
+    .brand-txt{font-size:18px;font-weight:700;color:#FFD700;text-shadow:none!important}
+
+    /* ── 进度条 ── */
+    .prog{position:absolute;bottom:50px;left:60px;right:60px;height:2px;background:rgba(255,255,255,0.03);border-radius:2px}
+    .pf{height:100%;width:0%;background:#22D3EE;border-radius:2px}
+  </style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-duration="{{TOTAL_DUR}}" data-width="1080" data-height="1920">
+
+  <!-- ════ 视频轨道 ════ -->
+  {{VIDEO_TRACKS}}
+
+  <!-- ════ HOOK ════ -->
+  <div id="h-bd" class="clip bd" data-start="0" data-duration="{{HOOK_DUR}}"></div>
+  <div id="h-ol" class="clip ol" data-start="0" data-duration="{{HOOK_DUR}}" style="align-items:center;padding-left:60px;">
+    <div class="hook-tag">{{PREP_TAG}}</div>
+    <div class="hook-line">{{HOOK_LINE1}}</div>
+    <div class="hook-line" style="color:#22D3EE;">{{HOOK_LINE2}}</div>
+    <div class="hook-sub">{{HOOK_SUB}}</div>
+  </div>
+
+  <!-- ════ 行前准备TIPS ════ -->
+  {{TIP_SCENES}}
+
+  <!-- ════ CTA ════ -->
+  <div id="c-bd" class="clip bd" data-start="{{CTA_START}}" data-duration="{{CTA_DUR}}"></div>
+  <div id="c-cta" class="clip cta-group" data-start="{{CTA_START}}" data-duration="{{CTA_DUR}}">
+    <div class="cta-btn">📥 {{CTA_TEXT}}</div>
+    <div class="brand-bar"><div class="brand-dot"></div><span class="brand-txt">pandajourneys.top</span></div>
+  </div>
+
+  <div class="prog"><div id="pf" class="pf"></div></div>
+  <audio id="tts" data-start="0" data-duration="{{TOTAL_DUR}}" src="{{TTS_SRC}}"></audio>
+  <audio id="bgm" data-start="0" data-duration="{{TOTAL_DUR}}" src="{{BGM_SRC}}" data-volume="0.08"></audio>
+</div>
+
+<script>
+window.__timelines = window.__timelines || {};
+const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+
+/* ── HOOK ── */
+tl.from(".hook-tag",{y:-20,opacity:0,duration:0.5},0.2);
+tl.from(".hook-line",{x:-60,opacity:0,duration:0.8,stagger:0.15,ease:"power4.out"},0.5);
+tl.from(".hook-sub",{y:15,opacity:0,duration:0.5},1.8);
+tl.to("#h-ol",{opacity:0,duration:0.3},{{HOOK_END}});
+
+/* ── TIPS动画 ── */
+{{TIP_ANIMS}}
+
+/* ── CTA ── */
+tl.from("#c-cta",{opacity:0,y:30,duration:0.6,ease:"back.out(1.7)"},{{CTA_ANIM_START}});
+tl.to("#pf",{width:"100%",duration:{{TOTAL_DUR}},ease:"none"},0.5);
+
+window.__timelines["main"] = tl;
+</script>
+</body>
+</html>

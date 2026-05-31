@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+workspace/
+output/
+.DS_Store
+config/
+accounts/
+sounds/
+.pytest_cache/
+*.log
+m4_hf/__pycache__/

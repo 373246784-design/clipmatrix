@@ -158,17 +158,53 @@ def check_route_logic(scenes: list, direction: str, style: str) -> (bool, list):
 
 
 def check_cta(text: str) -> bool:
-    """检查CTA — 双档位: 强转化(DM us) 或 留存(Save this for) (2026-05-31)"""
-    # 🥇 强转化: DM us + 关键词 + 交付物
-    if re.search(r'\bDM\s+us\s+\w+.*(?:send|itinerary|guide|map|plan|route)\b', text, re.IGNORECASE):
-        return True
-    # 🥇 强转化: 至少有 DM us + 关键词
-    if re.search(r'\bDM\s+us\s+\w+', text, re.IGNORECASE):
-        return True
-    # 🥈 留存型: Save this for + 具体场景(至少3个词)
-    if re.search(r'\bSave\s+this\s+for\s+your\s+\w+(?:\s+\w+){1,}', text, re.IGNORECASE):
-        return True
-    return False
+    """CTA质量检查 — 验证逻辑要素,不卡死不句式 (2026-06-01)
+    
+    三步验证:
+    1. 排除垃圾CTA (comment below, follow for等)
+    2. 确认有具体关键词/场景引用
+    3. 确认有行动导向
+    """
+    t = text.lower().strip()
+    
+    # ❌ 一票否决: 垃圾CTA
+    garbage = [
+        r'\bcomment\s+below\b', r'\bfollow\s+for\s+more\b',
+        r'\blet\s+us\s+know\b', r'\bwhat\s+do\s+you\s+think\b',
+        r'\btell\s+us\b', r'\blike\s+and\s+subscribe\b',
+        r'\bshare\s+this\b', r'\bdrop\s+a\s+comment\b',
+    ]
+    for pat in garbage:
+        if re.search(pat, t, re.IGNORECASE):
+            return False
+    
+    # ✅ 验证1: 有具体引用 (关键词、地名、场景)
+    # 找ABC大写关键词
+    has_keyword = bool(re.search(r'\b[A-Z]{2,}\b', text))  # DM us CHENGDU, message JIUZHAI
+    # 或具体场景短语
+    has_scenario = bool(re.search(
+        r'\b(?:your|this|the|next|first|winter|summer|spring|autumn)\s+(?:\w+\s+){0,2}(?:trip|visit|adventure|journey|route|plan|guide|map|stay)\b',
+        text, re.IGNORECASE))
+    # 或具体交付物
+    has_deliverable = bool(re.search(
+        r'\b(?:itinerary|route|guide|map|checklist|plan|list|pin|secret|spot|timing|schedule|exact|full|complete)\b',
+        text, re.IGNORECASE))
+    
+    if not (has_keyword or has_scenario or has_deliverable):
+        return False
+    
+    # ✅ 验证2: 有行动导向
+    action_patterns = [
+        r'\bdm\b', r'\bsave\b', r'\bgrab\b', r'\bget\b', r'\bbook\b',
+        r'\bmessage\b', r'\btap\b', r'\bclick\b', r'\bfind\b', r'\bcheck\b',
+        r'\bdownload\b', r'\bkeep\b', r'\bpin\b', r'\bbookmark\b',
+        r'\bsend\b', r'\b(?:reach|write)\s+(?:us|to)\b',
+    ]
+    has_action = any(re.search(pat, t) for pat in action_patterns)
+    if not has_action:
+        return False
+    
+    return True
 
 
 def check_sentence_length(text: str) -> bool:

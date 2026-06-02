@@ -44,7 +44,6 @@ logger = logging.getLogger(__name__)
 # DeepSeek API configuration — 从 config_loader 读，环境变量优先
 import os
 from config_loader import get as cfg_get
-
 DEEPSEEK_API_KEY = None
 DEEPSEEK_BASE_URL = cfg_get("api.deepseek.base_url", "https://api.deepseek.com")
 
@@ -128,25 +127,11 @@ DIRECTION_SCENES_V4 = {
 
 
 def get_api_key() -> str:
-    """获取DeepSeek API Key — 优先级: 环境变量 > config.yaml > auth-profiles"""
+    """获取DeepSeek API Key"""
     global DEEPSEEK_API_KEY
     if DEEPSEEK_API_KEY:
         return DEEPSEEK_API_KEY
 
-    # 1. config.yaml
-    from config_loader import get as cfg_get
-    key = cfg_get("api.deepseek.api_key", "")
-    if key:
-        DEEPSEEK_API_KEY = key
-        return key
-
-    # 2. 环境变量
-    api_key = os.environ.get("DEEPSEEK_API_KEY", "")
-    if api_key:
-        DEEPSEEK_API_KEY = api_key
-        return api_key
-
-    # 3. OpenClaw auth-profiles
     auth_path = Path.home() / ".openclaw" / "agents" / "main" / "agent" / "auth-profiles.json"
     if not auth_path.exists():
         auth_path = Path(__file__).parent.parent / ".openclaw" / "agents" / "main" / "agent" / "auth-profiles.json"
@@ -166,6 +151,11 @@ def get_api_key() -> str:
                     return DEEPSEEK_API_KEY
         except Exception as e:
             logger.warning(f"Failed to load auth-profiles: {e}")
+
+    api_key = os.environ.get("DEEPSEEK_API_KEY", "")
+    if api_key:
+        DEEPSEEK_API_KEY = api_key
+        return api_key
 
     logger.warning("No DeepSeek API key found")
     return ""
@@ -318,32 +308,37 @@ Good: "The #1 routing mistake in Sichuan? Starting in Chengdu." (gap — they we
 
 📖 BODY — One idea. The body delivers the proof behind the gap you opened. One specific example, one concrete detail. Not a list — a reason. Natural spoken English. Contractions. Short sentences.
 
-🔗 CTA — MANDATORY. Every video MUST end with one of these two formats:
+🔗 CTA — MANDATORY. Every video's last sentence is the call to action. Think: "You saw the gap. Here's how to close it."
 
-🥇 Strong conversion (routes, guides, itineraries):
-"DM us [ONE KEYWORD] and we'll send you [CONCRETE DELIVERABLE]."
-Example: "DM us CHENGDU and we'll send you our full 3-day itinerary"
+CTA LOGIC (not a template — use your own words, vary naturally):
 
-🥈 Retention (pure inspiration, scenic showcases):
-"Save this for your [SPECIFIC SCENARIO]."
-Example: "Save this for your next Sichuan adventure"
+1. HOW TO ACT — Give them a simple action they can take now:
+   DM us · Save this · Grab · Message us · Get · Bookmark · Tap the link · Find here
 
-Rules:
-- ONE keyword in DM-type CTAs
-- Concrete deliverable ("exact itinerary", "full city guide", "route map")
-- Save-type must have a specific scenario (not just "next trip")
-- NEVER leave a video without a CTA
-- NEVER use vague CTAs: "comment below", "tell us what you think", "drop a comment", "follow for more"
+2. WHAT THEY GET — A concrete thing tied to the video topic:
+   itinerary · route · guide · map · checklist · pin · secret spot · exact timing
 
-🧩 THE CHAIN — Gap opens → Proof delivers → CTA closes. One keyword from the hook echoes in the CTA. Natural, not forced.
+3. SPECIFIC HOOK — A keyword or scenario that connects back to the video:
+   "CHENGDU" · "your Sichuan trip" · "the winter route"
+
+PATTERNS THAT WORK (vary these, don't copy):
+"DM us CHENGDU and we'll send you the full itinerary" ✅
+"Save this for your first Sichuan trip" ✅
+"Grab our exact route — link in bio" ✅
+"Message us JIUZHAI for the winter map" ✅
+"Bookmark this — you'll need it at 6AM" ✅
+
+WHAT AUTOMATICALLY FAILS:
+"Comment below" ❌ · "Follow for more" ❌ · "What do you think?" ❌ · "Let us know" ❌
+No CTA sentence at all ❌
+
+🧩 THE CHAIN — Gap opens → Proof delivers → CTA closes naturally. The CTA feels like the next logical step, not an ad.
 
 Scene names: Chinese attraction names from the Available Scenes list.
 
 OUTPUT FORMAT (valid JSON only, no markdown):
 
-⚠️ CRITICAL: Every speech_text MUST end with one of:
-   "DM us [KEYWORD] and we'll send you [DELIVERABLE]"  OR  "Save this for your [SCENARIO]"
-   Videos without these will be REJECTED.
+⚠️ The speech_text MUST end with a real CTA sentence — an invitation to take a specific next step with a clear deliverable. Videos without one will be REJECTED.
 
 {{
   "speech_text": "40-60 word voiceover. Hook→Body→CTA. Pandajourneys platform voice. ALL ENGLISH — NO Chinese characters.",

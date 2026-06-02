@@ -5,6 +5,7 @@
 - M5通过→M6自动发布
 
 配置文件: ../config.yaml（所有路径/API Key/参数集中管理）
+- gap 5s
 """
 import os, json, sys, shutil, subprocess, logging, random, time
 from pathlib import Path
@@ -150,6 +151,21 @@ def publish_metricool(video_path: str, caption: str, account_id: str,
     import hashlib, base64, os, subprocess
     from urllib.parse import quote
 
+    # === M6铁律1: 视频上限300MB，禁止压缩 (2026-06-01) ===
+    file_size = os.path.getsize(video_path)
+    max_size = 300 * 1024 * 1024  # 300MB
+    if file_size > max_size:
+        logger.error(f"  🚫 视频超标: {file_size//1024//1024}MB > 300MB，拒绝发布。请检查M4编码参数")
+        return {"success": False, "error": f"Video too large: {file_size//1024//1024}MB > 300MB", "post_id": ""}
+
+    # === M6铁律2: Caption不能包含口播文案 (2026-06-01) ===
+    if len(caption) > 300:
+        logger.warning(f"  ⚠️ Caption过长({len(caption)}字)，疑似口播文案误入，截断到200字")
+        caption = caption[:200] + "..."
+    if "---" in caption.split("\n")[0]:
+        logger.error(f"  🚫 Caption包含口播文案分隔符，拒绝发布。请检查M1.5输出")
+        return {"success": False, "error": "Caption contains speech_text separator", "post_id": ""}
+
     # 🔒 最终安全检查: 确保 #pandajourneys 标签存在 (2026-05-31)
     if '#pandajourneys' not in caption.lower():
         caption = caption.rstrip() + ' #pandajourneys'
@@ -162,7 +178,6 @@ def publish_metricool(video_path: str, caption: str, account_id: str,
         capture_output=True, text=True, timeout=10)
     if _proxy_check.stdout.strip() not in ('200', '301', '302', '401', '403'):
         # 国际网不通，尝试杀代理
-        _sp.run(['pkill', '-9', '-f', 'MacPacketTunnel'], capture_output=True, timeout=5)
         _sp.run(['networksetup', '-setwebproxystate', 'Wi-Fi', 'off'], capture_output=True, timeout=5)
         import time as _t; _t.sleep(2)
 
@@ -272,7 +287,7 @@ def publish_metricool(video_path: str, caption: str, account_id: str,
                 "-X", "PUT", "-T", video_path,
                 "-H", "Content-Type: video/mp4",
                 "-H", f"x-amz-checksum-sha256: {file_hash_b64}",
-                presigned], capture_output=True, text=True, timeout=300)
+                presigned], capture_output=True, text=True, timeout=600)
             code = r2.stdout.strip()
             logger.info(f"  S3 upload: HTTP {code}")
             if code not in ("200", "201", "204", "100"):
@@ -300,7 +315,7 @@ def publish_metricool(video_path: str, caption: str, account_id: str,
                     "-X", "PUT", "-T", tmp,
                     "-H", "Content-Type: video/mp4",
                     "-H", f"x-amz-checksum-sha256: {part_hash}",
-                    url], capture_output=True, text=True, timeout=300)
+                    url], capture_output=True, text=True, timeout=600)
                 os.unlink(tmp)
                 code = r_p.stdout.strip()
                 if code not in ("200", "204"):
@@ -715,8 +730,7 @@ def run_pipeline(account_id: str, direction: str = None,
             m1_prompt = ""
 
         # === M1.5 文案生成 ===
-        # 🔧 (2026-05-31) DeepSeek API调用前杀代理，防止被MacPacketTunnel阻断
-        subprocess.run(['pkill', '-9', '-f', 'MacPacketTunnel'], capture_output=True, timeout=5)
+        # 🔧 DeepSeek API调用前确保网络通畅
         logger.info("M1.5: Generating script...")
         try:
             script = _retry_stage("M1.5", account_id, max_retries,
@@ -823,7 +837,6 @@ def run_pipeline(account_id: str, direction: str = None,
             while _m2_retries < _m2_max and not m2_result.get("passed", False):
                 _m2_retries += 1
                 logger.info(f"♻️ M1.5第{_m2_retries}次重试 (M2反馈: {reasons[:60]})")
-                subprocess.run(['pkill', '-9', '-f', 'MacPacketTunnel'], capture_output=True, timeout=5)
                 try:
                     script = _retry_stage("M1.5", account_id, max_retries,
                         generate_script, account, direction, history,
@@ -961,8 +974,10 @@ def run_pipeline(account_id: str, direction: str = None,
                 matched = _retry_stage("M3", account_id, max_retries,
                     match_scenes, sb_scenes, m3_orient, scene_durs)
             else:
+                # 🔧 dict→string转换，防止M3 crash (2026-05-31)
+                scene_names = [s if isinstance(s, str) else s.get("scene", str(s)) for s in scenes]
                 matched = _retry_stage("M3", account_id, max_retries,
-                    match_scenes, scenes, m3_orient)
+                    match_scenes, scene_names, m3_orient)
         except Exception as e:
             errors.append(f"M3 failed after {max_retries} retries: {e}")
             matched = []
@@ -1265,7 +1280,6 @@ def run_pipeline(account_id: str, direction: str = None,
             logger.info(f"♻️ M5第{_m5_retries}/{_m5_max}次重试 (反馈: {reason_str[:80]})")
 
             # --- Step 1: 重新生成文案 (M1.5) ---
-            subprocess.run(['pkill', '-9', '-f', 'MacPacketTunnel'], capture_output=True, timeout=5)
             try:
                 script = _retry_stage("M15-M5RETRY", account_id, max_retries,
                     generate_script, account, direction, history,
@@ -1497,7 +1511,8 @@ def run_pipeline(account_id: str, direction: str = None,
         schedule_dt = schedule_date.replace(hour=rand_hour, minute=rand_min,
                                              second=0, microsecond=0)
         if schedule_dt <= datetime.now():
-            schedule_dt += timedelta(days=1)
+            # 过去的日期：立即排到最近的未来时段，不改日期
+            schedule_dt = datetime.now() + timedelta(minutes=random.randint(5, 30))
         if last_time and abs((schedule_dt - last_time).total_seconds()) < 1800:
             continue
         break

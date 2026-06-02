@@ -9,9 +9,8 @@ import os
 import re
 import random
 import logging
-from pathlib import Path
-
 from config_loader import get_path
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +25,10 @@ CN_SYNONYMS = {
     "邛海": ["西昌邛海"],
     "大理古城": ["大理古镇"],
     "大理古镇": ["大理古城"],
+    # 春熙路商圈 (2026-06-01)
+    "春熙路": ["IFS熊猫", "太古里"],
+    "IFS熊猫": ["春熙路", "太古里"],
+    "太古里": ["春熙路", "IFS熊猫"],
 }
 
 # 🔴 短素材黑名单 — 素材绝对时长<7s，M3拒绝选用（盼哥2026-05-24标注）
@@ -46,6 +49,7 @@ EN_TO_CN_SCENE = {
     "dujiangyan": "都江堰", "irrigation": "都江堰",
     "wide alley": "宽窄巷子", "narrow alley": "宽窄巷子", "kuanzhai": "宽窄巷子",
     "taikoo": "太古里", "taikoo li": "太古里",
+    "chunxi": "春熙路", "chunxi road": "春熙路", "ifs": "IFS熊猫", "ifs panda": "IFS熊猫",
     "an shun": "安顺廊桥", "an shun bridge": "安顺廊桥",
     "339 tower": "339电视塔", "339 tv": "339电视塔",
     "jinjiang": "锦江", "jin river": "锦江",

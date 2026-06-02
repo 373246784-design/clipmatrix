@@ -8,7 +8,7 @@ metadata:
       env: ["DEEPSEEK_API_KEY"]
 ---
 
-# Panda Workflow — 内容矩阵短视频自动化
+# ClipMatrix — TikTok/IG 真实素材批量混剪+口播+发布矩阵
 
 **定位**：一套用真实素材自动剪辑TikTok/IG短视频的生产线，适合做矩阵运营的创作者。不是模板生成——是真的从你的素材库里匹配实拍画面、AI写文案、TTS配音、自动渲染并发布。
 
